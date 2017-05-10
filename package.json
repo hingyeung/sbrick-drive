@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {},
   "devDependencies": {
+    "lodash": "^4.17.4",
     "noble": "^1.8.1",
     "q": "^1.5.0"
   },

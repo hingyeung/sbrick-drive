@@ -2,8 +2,10 @@
 
 var noble = require('noble');
 var Q = require('q');
-let REMOTE_CONTROL_SERVICE_UUID = '4dc591b0857c41deb5f115abda665b0c';
-let REMOTE_CONTROL_CHARACTERISTIC_UUID = '02b8cbcc0e254bda8790a15f53e6010f';
+var _ = require('lodash');
+const REMOTE_CONTROL_SERVICE_UUID = '4dc591b0857c41deb5f115abda665b0c';
+const REMOTE_CONTROL_CHARACTERISTIC_UUID = '02b8cbcc0e254bda8790a15f53e6010f';
+const NUM_CHANNEL = 5;
 
 noble.on('stateChange', function(state) {
 	console.log('stateChange event: ' + state);
@@ -33,8 +35,6 @@ function discoverCallback(peripheral) {
 			return Q.ninvoke(peripheral, 'disconnect');
 		})
 		.done();
-
-		// connectPeripheral(peripheral);
 	}
 };
 
@@ -66,7 +66,49 @@ function sendRemoteControlCommand(characteristics) {
 	}
 
 	console.log('Sending remote control command');
-	return Q().thenResolve();
+	var remoteControlCharacteristic = characteristics[0];
+	var q = Q.defer();
+
+	// Get channel status
+	// const cmd = Buffer.from([0x22]);
+	// drive, channel 0, direction, power
+	// const cmd = Buffer.from([0x01, 0x00, 0x00, 0xFF]);
+	const cmd = driveForward([0, 1], 0xFF);
+	
+	remoteControlCharacteristic.write(cmd, true, function(error) {
+		if (error) {
+			console.log('send command error', error);
+			q.reject(error);
+		}
+
+		remoteControlCharacteristic.on('read', function(data, isNotification) {
+			console.log('isNotification', isNotification);
+			console.log('data: ', data);
+			setTimeout(function() { q.resolve(); }, 2000);
+		});
+		remoteControlCharacteristic.read();
+	});
+	remoteControlCharacteristic.subscribe(function(error) {
+		if (error) {
+			console.log('subscribe error', error);
+			q.reject(error);
+		}
+	})
+
+	return q.promise;
+}
+
+// channels contains a list of channels 
+// that will receive the drive command
+function driveForward(channels, power) {
+	var command = [0x01];
+
+	for (var idx = 0; idx < NUM_CHANNEL; idx++) {
+		var commandForThisChannel = [idx, 0x00, _.includes(channels, idx) ? power : 0x00];
+		command = _.concat(command, commandForThisChannel);
+	}
+	console.log(command);
+	return Buffer.from(command);
 }
 
 function discoverServicesAndCharacteristicsOnPeripheral(peripheral) {
