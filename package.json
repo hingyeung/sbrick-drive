@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
+    "winston": "^2.3.1",
     "lodash": "^4.17.4",
     "noble": "^1.8.1",
     "q": "^1.5.0"
+  },
+  "devDependencies": {
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
