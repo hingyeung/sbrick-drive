@@ -2,14 +2,27 @@
 
 const REMOTE_CONTROL_SERVICE_UUID = '4dc591b0857c41deb5f115abda665b0c';
 const REMOTE_CONTROL_CHARACTERISTIC_UUID = '02b8cbcc0e254bda8790a15f53e6010f';
+const DRIVE_CMD = 0x01;
+const BREAK_CMD = 0x00;
 const NUM_CHANNEL = 4;
+const tsFormat = () => (new Date()).toLocaleTimeString();
 
 var noble = require('noble'),
 	Q = require('q'),
 	_ = require('lodash'),
 	winston = require('winston');
 
-winston.level = 'debug';
+const logger = new (winston.Logger)({
+  transports: [
+    // colorize the output to the console
+    new (winston.transports.Console)({
+      timestamp: tsFormat,
+      colorize: true,
+    })
+  ]
+});
+
+logger.level = 'debug';
 
 var SBrick = function() {
 	this.id = null;
@@ -22,9 +35,9 @@ SBrick.prototype.discoverAndConnect = function() {
 	var self = this,
 		deferred = Q.defer();
 
-	winston.debug('discoverAndConnect');
+	logger.debug('discoverAndConnect');
 	noble.on('stateChange', function(state) {
-		winston.debug('stateChange event: ' + state);
+		logger.debug('stateChange event: ' + state);
 
 		if (state === 'poweredOn') {
 			self.connect().then(function() {
@@ -43,42 +56,38 @@ SBrick.prototype.connect = function() {
 	// 1. go into scannign mode
 	// 2. connect to a SBrick
 	return self.discoverSBrick()
-		.then(connectToPeripheralWrapper(self))
-		.then(findRemoteControlServiceWrapper(self))
-		.then(findRemoteControlCharacteristicWrapper(self));
+		.then(self.connectToPeripheral.bind(self))
+		.then(self.findRemoteControlService.bind(self))
+		.then(self.findRemoteControlCharacteristic.bind(self));
 };
 
 SBrick.prototype.discoverSBrick = function() {
 	var deferred = Q.defer();
 
-	winston.info('Discovering SBrick nearby');
+	logger.info('Discovering SBrick nearby');
 	noble.startScanning([], false);
 	noble.on('discover', function(peripheral) {
-		winston.info('Peripheral discovered', peripheral.id);
-		winston.debug('Peripheral advertisement', peripheral.advertisement);
+		logger.info('Peripheral discovered', peripheral.id);
+		logger.debug('Peripheral advertisement', peripheral.advertisement);
 		if (peripheral.advertisement.localName &&
 			peripheral.advertisement.localName.startsWith('SBrick ')) {
 			// this promise will be resolved everytime a SBrick is discovered
 			noble.removeAllListeners('discover');
+			logger.debug('Discovered a SBrick');
 			deferred.resolve(peripheral);
 		} else {
-			deferred.reject(new Error('Not a SBrick'));
+			logger.error('Not a SBrick');
+			// deferred.reject(new Error('Not a SBrick'));
 		}
 	});
 	return deferred.promise;
-}
-
-function connectToPeripheralWrapper(self) {
-	return function(peripheral) {
-		return self.connectToPeripheral(peripheral);
-	}
 }
 
 SBrick.prototype.connectToPeripheral = function(peripheral) {
 	var deferred = Q.defer(),
 		self = this;
 
-	winston.info('connecting to peripheral', peripheral.id);
+	logger.info('connecting to peripheral', peripheral.id);
 	peripheral.connect(function(error) {
 		if (error) {
 			deferred.reject(new Error(error));
@@ -92,60 +101,48 @@ SBrick.prototype.connectToPeripheral = function(peripheral) {
 	return deferred.promise;
 }
 
-function findRemoteControlServiceWrapper(self) {
-	return function(peripheral) {
-		return self.findRemoteControlService(peripheral);
-	}
-}
-
 SBrick.prototype.findRemoteControlService = function(peripheral) {
 	var deferred = Q.defer(),
 		self = this;
 
-	winston.info('finding remote control service');
+	logger.info('finding remote control service');
 	peripheral.discoverServices([REMOTE_CONTROL_SERVICE_UUID], function(error, services) {
 		if (error) {
-			winston.error(error);
+			logger.error(error);
 			deferred.reject(error);
 		}
 
 		if (services.length != 1) {
 			var msg = 'Not exactly one remote control service discovered';
-			winston.error(msg);
+			logger.error(msg);
 			deferred.reject(new Error(msg));
 		}
 
-		winston.info('Remote control service discovered:', services[0].uuid);
+		logger.info('Remote control service discovered:', services[0].uuid);
 		self.service = services[0];
 		deferred.resolve(services[0]);
 	});
 	return deferred.promise;
 }
 
-function findRemoteControlCharacteristicWrapper(self) {
-	return function(service) {
-		return self.findRemoteControlCharacteristic(service);
-	}
-}
-
 SBrick.prototype.findRemoteControlCharacteristic = function(service) {
 	var deferred = Q.defer(),
 		self = this;
 
-	winston.info('finding remote control characteristic');
+	logger.info('finding remote control characteristic');
 	service.discoverCharacteristics([REMOTE_CONTROL_CHARACTERISTIC_UUID], function(error, characteristics) {
 		if (error) {
-			winston.error(error);
+			logger.error(error);
 			deferred.reject(error);
 		}
 
 		if (characteristics.length != 1) {
 			var msg = 'Not exactly one remote control characteristic discovered';
-			winston.error(msg);
+			logger.error(msg);
 			deferred.reject(new Error(msg));
 		}
 
-		winston.info('Remote control characteristic discovered:', characteristics[0].uuid);
+		logger.info('Remote control characteristic discovered:', characteristics[0].uuid);
 		self.characteristic = characteristics[0];
 		deferred.resolve(characteristics[0]);
 	});
@@ -155,20 +152,30 @@ SBrick.prototype.findRemoteControlCharacteristic = function(service) {
 // channels contains a list of channels 
 // that will receive the drive command
 SBrick.prototype.driveForward = function(channels, power) {
-	winston.debug('Driving forward');
+	logger.debug('Driving forward');
 
-	var command = [0x01];
+	var command = [DRIVE_CMD];
 	for (var idx = 0; idx < NUM_CHANNEL; idx++) {
 		var commandForThisChannel = [idx, 0x00, _.includes(channels, idx) ? power : 0x00];
 		command = _.concat(command, commandForThisChannel);
 	}
-	winston.debug('command', command);
-	this.write(Buffer.from(command));
+	logger.debug('command', command);
+	this.writeWithoutResponse(Buffer.from(command));
 }
 
-SBrick.prototype.write = function(cmd) {
+SBrick.prototype.break = function(channels) {
+	// break all command
+	var command = _.concat(BREAK_CMD, channels);
+	this.writeWithoutResponse(Buffer.from(command));
+}
+
+SBrick.prototype.stop = function(channels) {
+	this.driveForward(channels, 0x00);
+}
+
+SBrick.prototype.writeWithoutResponse = function(cmd) {
 	var self = this;
-	winston.debug('writing command', cmd);
+	logger.debug('writing command', cmd);
 	var deferred = Q.defer();
 	self.characteristic.write(cmd, true, function(error) {
 		if (error) {
@@ -176,12 +183,12 @@ SBrick.prototype.write = function(cmd) {
 			deferred.reject(error);
 		}
 
-		self.characteristic.on('read', function(data, isNotification) {
-			winston.debug('isNotification', isNotification);
-			winston.debug('data: ', data);
-			setTimeout(function() { deferred.resolve(); }, 1000);
-		});
-		self.characteristic.read();
+		// self.characteristic.on('read', function(data, isNotification) {
+		// 	logger.debug('isNotification', isNotification);
+		// 	logger.debug('data: ', data.toString('utf8'));
+		// 	setTimeout(function() { deferred.resolve(); }, 1000);
+		// });
+		// self.characteristic.read();
 	});
 	return deferred.promise;
 }
