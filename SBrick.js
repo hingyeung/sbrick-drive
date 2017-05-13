@@ -5,26 +5,16 @@ const REMOTE_CONTROL_CHARACTERISTIC_UUID = '02b8cbcc0e254bda8790a15f53e6010f';
 const DRIVE_CMD = 0x01;
 const BREAK_CMD = 0x00;
 const NUM_CHANNEL = 4;
-const tsFormat = () => (new Date()).toLocaleTimeString();
 
 var noble = require('noble'),
 	Q = require('q'),
 	_ = require('lodash'),
-	winston = require('winston');
-
-const logger = new (winston.Logger)({
-  transports: [
-    // colorize the output to the console
-    new (winston.transports.Console)({
-      timestamp: tsFormat,
-      colorize: true,
-    })
-  ]
-});
+	logger = require('./Logger');
 
 logger.level = 'debug';
 
 var SBrick = function() {
+	this.ready = false;
 	this.id = null;
 	this.peripheral = null;
 	this.service = null;
@@ -69,9 +59,9 @@ SBrick.prototype.discoverSBrick = function() {
 	noble.on('discover', function(peripheral) {
 		logger.info('Peripheral discovered', peripheral.id);
 		logger.debug('Peripheral advertisement', peripheral.advertisement);
-		if (peripheral.advertisement.localName &&
-			peripheral.advertisement.localName.startsWith('SBrick ')) {
-			// this promise will be resolved everytime a SBrick is discovered
+		if (isSBrick(peripheral)) {
+			// this promise would be resolved everytime a SBrick is discovered
+			// if we don't remove the 'discover' listener
 			noble.removeAllListeners('discover');
 			logger.debug('Discovered a SBrick');
 			deferred.resolve(peripheral);
@@ -92,7 +82,6 @@ SBrick.prototype.connectToPeripheral = function(peripheral) {
 		if (error) {
 			deferred.reject(new Error(error));
 		} else {
-			console.log('connectPeripheral: resolved');
 			self.id = peripheral.id;
 			self.peripheral = peripheral;
 			deferred.resolve(peripheral);
@@ -144,6 +133,7 @@ SBrick.prototype.findRemoteControlCharacteristic = function(service) {
 
 		logger.info('Remote control characteristic discovered:', characteristics[0].uuid);
 		self.characteristic = characteristics[0];
+		self.ready = true;
 		deferred.resolve(characteristics[0]);
 	});
 	return deferred.promise;
@@ -191,6 +181,11 @@ SBrick.prototype.writeWithoutResponse = function(cmd) {
 		// self.characteristic.read();
 	});
 	return deferred.promise;
+}
+
+function isSBrick(peripheral) {
+	return peripheral.advertisement.localName &&
+			peripheral.advertisement.localName.startsWith('SBrick ')
 }
 
 module.exports = SBrick;
