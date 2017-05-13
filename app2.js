@@ -1,20 +1,21 @@
 
-const SBrick = require('./SBrick.js'),
+const SBrick = require('./lib/SBrick.js'),
 	Q = require('q'),
 	queue = require('async/queue'),
-	Command = require('./Command'),
-	logger = require('./Logger');
+	SBCommand = require('./lib/SBCommand'),
+	logger = require('./lib/Logger');
 	
 
 var sbrick = new SBrick();
 var cmdQueue = createCommandQueue();
 // drive forward on channel 0 and 1
-cmdQueue.push(new Command(Command.FORWARD, [0, 1]));
+cmdQueue.push(new SBCommand(SBCommand.TYPE.FORWARD, [0, 1]));
 // stop all channel
-cmdQueue.push(new Command(Command.STOP));
+cmdQueue.push(new SBCommand(SBCommand.TYPE.STOP, [0, 1]));
 
 sbrick.discoverAndConnect().then(function() {
 	console.log('SBrick ready');
+	cmdQueue.resume();
 	// sbrick.driveForward([0, 1], 0xFF);
 	// Q.delay(1000).done(function() {
 	// 	sbrick.stop([0, 1]);
@@ -22,24 +23,23 @@ sbrick.discoverAndConnect().then(function() {
 }).done();
 
 function createCommandQueue() {
-	return queue(sendCmdToSBrick, 1);
+	var cmdQ = queue(sendCmdToSBrick, 1);
+	cmdQ.pause();
+	return cmdQ;
 }
 
-function sendCmdToSBrick(command, cb) {
-	if (!sbrick.ready) {
-		throw new Error('SBrick not yet ready for command', command);
-	}
-	switch (command) {
-		case Command.STOP:
-			logger.debug('Sending STOP (%d) to SBrick', command);
+function sendCmdToSBrick(sbCommand, cb) {
+	switch (sbCommand.command) {
+		case SBCommand.TYPE.STOP:
+			logger.debug('Sending STOP (%d) to SBrick', sbCommand);
 			sbrick.stop();
 			break;
-		case Command.FORWARD:
-			logger.debug('Sending FORWARD (%d) to SBrick', command);
-			sbrick.driveForward();
+		case SBCommand.TYPE.FORWARD:
+			logger.debug('Sending FORWARD (%d) to SBrick', sbCommand);
+			sbrick.driveForward(sbCommand.channel, SBCommand.POWER_SETTING.FULL_POWER);
 			break;
 		default:
-			logger.error('Unknown command', command);
+			logger.error('Unknown command', sbCommand);
 	}
 	cb();
 }

@@ -2,7 +2,7 @@
   "name": "ble",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "app2.js",
   "dependencies": {
     "async": "^2.4.0",
     "lodash": "^4.17.4",
@@ -10,9 +10,13 @@
     "q": "^1.5.0",
     "winston": "^2.3.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.3.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test-unit",
+    "test-unit": "NODE_ENV=test mocha --require co-mocha 'lib/*.spec.js'"
   },
   "author": "",
   "license": "ISC"
