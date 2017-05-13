@@ -20,6 +20,9 @@ sbrick.discoverAndConnect().then(function() {
 	// Q.delay(1000).done(function() {
 	// 	sbrick.stop([0, 1]);
 	// });
+}).fail(function(error) {
+	logger.error('Exit with error:', error);
+	process.exit(1);
 }).done();
 
 function createCommandQueue() {
