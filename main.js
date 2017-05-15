@@ -7,27 +7,45 @@ const SBController = require('./lib/SBrickController'),
 		SBCommand = require('./lib/SBCommand');
 
 const DRIVE_CHANNELS = [0, 1],
-	  STEERING_CHANNELS = [2];
+	  STEERING_CHANNELS = [2],
+	  DIRECTION = { FORWARD: 0, BACKWARD: 1, LEFT: 2, RIGHT: 3 };
 
 var sbController = new SBController();
 sbController.init();
 sbController.on(SBEvent.CONNECTED, function() {
 	logger.info('SBController reported CONNECTED event');
 
-	forward();
-	maintainSpeed(2000);
-	left();
-	maintainDirection(2000);
-	straight();
-	maintainSpeed(2000);
-	right();
-	maintainDirection(2000);
-	straight();
-	maintainSpeed(2000);
+	driveFor(DIRECTION.FORWARD, 2000);
+	driveFor(DIRECTION.LEFT, 2000);
+	driveFor(DIRECTION.RIGHT, 2000);
+	driveFor(DIRECTION.FORWARD, 2000);
 	stop();
 });
 
-// TODO change to 1 chanenl
+function driveFor(direction, duration) {
+	switch (direction) {
+		case DIRECTION.FORWARD:
+			forward();
+			straight();
+			break;
+		case DIRECTION.LEFT:
+			forward();
+			left();
+			break;
+		case DIRECTION.RIGHT:
+			forward();
+			right();
+			break;
+		case DIRECTION.BACKWARD:
+			backward();
+			straight();
+			break;
+		default:
+			throw new Error('Unknown direction');
+	}
+	maintainSpeedAndDirection(duration);
+}
+
 function left() {
 	_.forEach(STEERING_CHANNELS, function(channel) {
 		sbController.queueCommand(
@@ -103,6 +121,17 @@ function maintainSpeed(duration) {
 
 function maintainDirection(duration) {
 	_.forEach(STEERING_CHANNELS, function(channel) {
+		sbController.queueCommand(
+			new SBCommand({
+				commandType: SBCommand.TYPE.NOOP,
+				channel: channel,
+				duration: duration
+			}));
+	});
+}
+
+function maintainSpeedAndDirection(duration) {
+	_.forEach(_.concat(STEERING_CHANNELS, DRIVE_CHANNELS), function(channel) {
 		sbController.queueCommand(
 			new SBCommand({
 				commandType: SBCommand.TYPE.NOOP,
