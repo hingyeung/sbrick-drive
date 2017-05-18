@@ -21,31 +21,15 @@ function enableKeyboardControl() {
 	  } else {
 	    logger.debug('You pressed the %s key: %j', str, key);
 	    if (key.name === 'up') {
-	    	forward();
+	    	simpleDriveController.simpleForward();
 	    } else if (key.name === 'left') {
-	    	left();
+	    	simpleDriveController.simpleLeft();
 	    } else if (key.name === 'right') {
-	    	right();
+	    	simpleDriveController.simpleRight();
 	    } else if (key.name === 'down') {
-	    	backward();
+	    	simpleDriveController.simpleBackward();
 	    }
 	  }
 	});
 	console.log('Press UP, DOWN, LEFT or RIGHT...');
-}
-
-function backward() {
-	simpleDriveController.simpleBackward();
-}
-
-function left() {
-	simpleDriveController.simpleLeft();
-}
-
-function right() {
-	simpleDriveController.simpleRight();
-}
-
-function forward() {
-	simpleDriveController.simpleForward();
 }
