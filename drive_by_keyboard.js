@@ -1,7 +1,7 @@
 'use strict';
 
-const SimpleDriveController = require('./lib/SimpleDriveController'),
-	  logger = require('./lib/Logger'),
+const SimpleDriveController = require('./lib/controllers/SimpleDriveController'),
+	  logger = require('./lib/utils/Logger'),
 	  readline = require('readline');
 
 const DRIVE_CHANNELS = [0, 1],
@@ -16,7 +16,7 @@ function enableKeyboardControl() {
 
 	process.stdin.on('keypress', (str, key) => {
 	  if (key.ctrl && key.name === 'c') {
-	  	logger.info('Exiting...')
+	  	logger.info('Exiting...');
 	    process.exit();
 	  } else {
 	    logger.debug('You pressed the %s key: %j', str, key);

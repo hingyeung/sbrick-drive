@@ -1,8 +1,8 @@
 'use strict';
 
 const readline = require('linebyline'),
-	  logger = require('./lib/Logger'),
-	  SimpleDriveController = require('./lib/SimpleDriveController');
+	  logger = require('./lib/utils/Logger'),
+	  SimpleDriveController = require('./lib/controllers/SimpleDriveController');
 
 const DRIVE_CHANNELS = [0, 1],
 	  STEERING_CHANNELS = [2];

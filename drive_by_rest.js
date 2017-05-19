@@ -1,9 +1,9 @@
 'use strict';
 
 const express = require('express'),
-	  logger = require('./lib/Logger'),
+	  logger = require('./lib/utils/Logger'),
 	  _ = require('lodash'),
-	  SimpleDriveController = require('./lib/SimpleDriveController');
+	  SimpleDriveController = require('./lib/controllers/SimpleDriveController');
 
 const app = express(),
 	  COMMANDS = ['forward', 'backward', 'left', 'right'],
