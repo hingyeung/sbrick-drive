@@ -19,7 +19,7 @@
   },
   "scripts": {
     "test": "npm run test-unit",
-    "test-unit": "NODE_ENV=test mocha --require co-mocha 'lib/*.spec.js'"
+    "test-unit": "mocha -R spec lib/**/*.spec.js"
   },
   "author": "",
   "license": "ISC"
