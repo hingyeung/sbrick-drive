@@ -10,10 +10,10 @@ const SBrick = require('../SBrick'),
 	_ = require('lodash'),
 	logger = require('../utils/Logger');
 
-const ALL_CHANNELS = [0, 1, 2, 3];
+const ALL_CHANNELS = SBCommand.CHANNELS;
 	
 function SBrickController() {
-	var self = this;
+	let self = this;
 
 	this.sbrick = new SBrick();
 	this.cmdQueues = createCommandQueues();
@@ -21,10 +21,13 @@ function SBrickController() {
 
 	function createCommandQueues() {
 		logger.debug('Creating command queues for channels');
-		var cmdQs = [];
-		_.times(ALL_CHANNELS.length, function() {
-			var qForThisChannel = queue(sendCmdToSBrick, 1);
+		let cmdQs = [];
+		_.times(ALL_CHANNELS.length, function(idx) {
+			let qForThisChannel = queue(sendCmdToSBrick, 1);
 			qForThisChannel.pause();
+			qForThisChannel.drain = function() {
+				self.emit(SBEvent.COMMAND_QUEUE_DRAINED);
+			};
 			cmdQs.push(qForThisChannel);
 		});
 
