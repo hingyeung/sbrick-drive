@@ -1,7 +1,10 @@
 $(document).ready(function() {
-	var recognition = new webkitSpeechRecognition(),
-		recording = false,
-		recordButtonId = '#recognition-btn';
+	const recognition = new webkitSpeechRecognition();
+
+    const recordButtonId = '#recognition-btn';
+
+    let	recording = false;
+
 
 	$(recordButtonId).click(function() {
 		if (recording) {
@@ -17,7 +20,7 @@ $(document).ready(function() {
 	};
 
 	recognition.onresult = function(event) { 
-		var command = event.results[0][0].transcript;
+		let command = event.results[0][0].transcript;
 		console.log('Result:', command);
 		sendCommandToServer(command);
 		recognition.stop();
@@ -26,14 +29,14 @@ $(document).ready(function() {
 	recognition.onend = function() {
 		recording = false;
 		updateButtonLabel('Start');
-	}
+	};
 
 	function updateButtonLabel(label) {
 		$(recordButtonId).html(label);
 	}
 
 	function sendCommandToServer(command) {
-		$.ajax('http://localhost:3000/drive/' + command)
+		$.ajax('http://localhost:3000/resolveActionFromText/' + command)
 			.done(function(data) {
 				console.log(command, 'command sent!');
 			});
