@@ -4,12 +4,19 @@ const readline = require('linebyline'),
     logger = require('./lib/utils/Logger'),
     SimpleDriveController = require('./lib/controllers/SimpleDriveController'),
     Q = require('q'),
+    fs = require('fs'),
     _ = require('lodash');
 
 const COMMANDS = ['forward', 'backward', 'left', 'right'],
     DRIVE_CHANNELS = [0, 1],
     STEERING_CHANNELS = [2];
 
+// doco says fs.watch() is more efficient and reliable, but
+// it only fire the 'rename' (?) event once.
+fs.watchFile(getInstructionFilename(), (curr, prev) => {
+  logger.debug('Instruction file change detected. Re-reading the file.');
+    executeStepsInFile();
+});
 
 let simpleDriveController = new SimpleDriveController(DRIVE_CHANNELS, STEERING_CHANNELS);
 simpleDriveController.connect(executeStepsInFile);
