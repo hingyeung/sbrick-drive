@@ -16,11 +16,14 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.3.0"
+    "mocha": "^3.3.0",
+    "proxyquire": "^1.8.0",
+    "sinon": "^2.3.0",
+    "sinon-chai": "^2.10.0"
   },
   "scripts": {
     "test": "npm run test-unit",
-    "test-unit": "mocha -R spec lib/**/*.spec.js"
+    "test-unit": "mocha -R spec **/*.spec.js"
   },
   "author": "",
   "license": "ISC"

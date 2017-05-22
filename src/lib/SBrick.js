@@ -15,18 +15,18 @@ const SCAN_TIMEOUT = 10000;
 
 logger.level = 'debug';
 
-var SBrick = function() {
-	var self = this;
+let SBrick = function() {
+	let self = this;
 	this.ready = false;
 	this.id = null;
 	this.peripheral = null;
 	this.service = null;
 	this.characteristic = null;
 
-	// var writeWithoutResponse;
+	// let writeWithoutResponse;
 
 	this.discoverAndConnect = function() {
-		var self = this,
+		let self = this,
 			deferred = Q.defer();
 
 		logger.debug('discoverAndConnect');
@@ -48,7 +48,7 @@ var SBrick = function() {
 	};
 
 	this.drive = function(channel, direction, power) {
-		var command = [DRIVE_CMD],
+		let command = [DRIVE_CMD],
 			commandForThisChannel = [
 				channel, direction, power
 			];
@@ -60,7 +60,7 @@ var SBrick = function() {
 
 	this.break = function(channel) {
 		// break all command
-		var command = _.concat(BREAK_CMD, channel);
+		let command = _.concat(BREAK_CMD, channel);
 		writeWithoutResponse(Buffer.from(command));
 	};
 
@@ -71,8 +71,8 @@ var SBrick = function() {
 			SBCommand.POWER_SETTING.NO_POWER);
 	};
 
-	var findRemoteControlCharacteristic = function(service) {
-		var deferred = Q.defer();
+	let findRemoteControlCharacteristic = function(service) {
+		let deferred = Q.defer();
 			// self = this;
 
 		logger.info('finding remote control characteristic');
@@ -82,8 +82,8 @@ var SBrick = function() {
 				deferred.reject(error);
 			}
 
-			if (characteristics.length != 1) {
-				var msg = 'Not exactly one remote control characteristic discovered';
+			if (characteristics.length !== 1) {
+				let msg = 'Not exactly one remote control characteristic discovered';
 				logger.error(msg);
 				deferred.reject(new Error(msg));
 			}
@@ -96,8 +96,8 @@ var SBrick = function() {
 		return deferred.promise;
 	};
 
-	var writeWithoutResponse = function(cmd) {
-		var deferred = Q.defer();
+	let writeWithoutResponse = function(cmd) {
+		let deferred = Q.defer();
 		logger.debug('writing command', cmd);
 		self.characteristic.write(cmd, true, function(error) {
 			if (error) {
@@ -113,20 +113,19 @@ var SBrick = function() {
 			// self.characteristic.read();
 		});
 		return deferred.promise;
-	}
+	};
 
-	var connect = function() {
-		// var self = this;
+	let connect = function() {
 		// 1. go into scannign mode
 		// 2. connect to a SBrick
 		return discoverSBrick()
 			.then(connectToPeripheral.bind(self))
 			.then(findRemoteControlService.bind(self))
 			.then(findRemoteControlCharacteristic.bind(self));
-	}
+	};
 
-	var discoverSBrick = function() {
-		var deferred = Q.defer();
+	let discoverSBrick = function() {
+		let deferred = Q.defer();
 
 		logger.info('Discovering SBrick nearby');
 		noble.startScanning([], false);
@@ -153,9 +152,8 @@ var SBrick = function() {
 		return deferred.promise;
 	};
 
-	var connectToPeripheral = function(peripheral) {
-		var deferred = Q.defer();
-			// self = this;
+	let connectToPeripheral = function(peripheral) {
+		let deferred = Q.defer();
 
 		logger.info('connecting to peripheral', peripheral.id);
 		peripheral.connect(function(error) {
@@ -170,9 +168,8 @@ var SBrick = function() {
 		return deferred.promise;
 	};
 
-	var findRemoteControlService = function(peripheral) {
-		var deferred = Q.defer();
-			// self = this;
+	let findRemoteControlService = function(peripheral) {
+		let deferred = Q.defer();
 
 		logger.info('finding remote control service');
 		peripheral.discoverServices([REMOTE_CONTROL_SERVICE_UUID], function(error, services) {
@@ -181,8 +178,8 @@ var SBrick = function() {
 				deferred.reject(error);
 			}
 
-			if (services.length != 1) {
-				var msg = 'Not exactly one remote control service discovered';
+			if (services.length !== 1) {
+				let msg = 'Not exactly one remote control service discovered';
 				logger.error(msg);
 				deferred.reject(new Error(msg));
 			}
@@ -198,6 +195,6 @@ var SBrick = function() {
 function isSBrick(peripheral) {
 	return peripheral.advertisement.localName &&
 			peripheral.advertisement.localName.startsWith('SBrick ')
-};
+}
 
 module.exports = SBrick;
