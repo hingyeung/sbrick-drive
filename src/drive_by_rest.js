@@ -17,7 +17,8 @@ const express = require('express'),
     _ = require('lodash'),
     ApiAiResponse = require('./lib/models/ApiAiResponse'),
     apiAiclient = apiai('865899f8e52e468291cf96b7c9777c89'),
-    SimpleDriveController = require('./lib/controllers/SimpleDriveController');
+    SimpleDriveController = require('./lib/controllers/SimpleDriveController'),
+    getConfig = require('./lib/services/ConfigService');
 
 const app = express(),
     COMMANDS = ['forward', 'backward', 'left', 'right'],
@@ -37,6 +38,12 @@ let isSBrickReady = false,
 simpleDriveController.connect(function () {
     isSBrickReady = true;
     logger.info('SBrick ready for action!');
+});
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 
 app.get('/drive/:command', function (req, res) {
@@ -110,6 +117,8 @@ function sendCommandToSBrick(commandStr) {
     }
 }
 
-app.listen(3000, function () {
-    logger.info('Listening on port 3000!')
+const config = getConfig();
+
+app.listen(config.port, function () {
+    logger.info(`Listening on port ${config.port}!`)
 });

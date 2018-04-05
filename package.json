@@ -4,6 +4,7 @@
   "description": "",
   "main": "app2.js",
   "dependencies": {
+    "apiai": "^4.0.3",
     "async": "^2.4.0",
     "express": "^4.15.3",
     "keypress": "^0.2.1",
@@ -24,9 +25,9 @@
   "scripts": {
     "test": "npm run test-unit",
     "test-unit": "mocha -R spec **/*.spec.js",
-    "drive-by-keyboard": "node src/drive_by_keyboard.js",
-    "drive-by-rest": "node src/drive_by_rest.js",
-    "drive-by-script": "node src/drive_by_script.js"
+    "drive-by-keyboard": "NODE_ENV=development node src/drive_by_keyboard.js",
+    "drive-by-rest": "NODE_ENV=development node src/drive_by_rest.js",
+    "drive-by-script": "NODE_ENV=development node src/drive_by_script.js"
   },
   "author": "",
   "license": "ISC"
