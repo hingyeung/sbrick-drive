@@ -1,13 +1,13 @@
 'use strict';
 
-const SimpleDriveController = require('./lib/controllers/SimpleDriveController'),
-	  logger = require('./lib/utils/Logger'),
+const SimpleDriveController = require('../../lib/controllers/SimpleDriveController'),
+	  logger = require('../../lib/utils/Logger'),
 	  readline = require('readline');
 
 const DRIVE_CHANNELS = [0, 1],
 	  STEERING_CHANNELS = [2];
 
-var simpleDriveController = new SimpleDriveController(DRIVE_CHANNELS, STEERING_CHANNELS);
+let simpleDriveController = new SimpleDriveController(DRIVE_CHANNELS, STEERING_CHANNELS);
 simpleDriveController.connect(enableKeyboardControl);
 
 function enableKeyboardControl() {

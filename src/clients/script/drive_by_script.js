@@ -1,8 +1,8 @@
 'use strict';
 
 const readline = require('linebyline'),
-    logger = require('./lib/utils/Logger'),
-    SimpleDriveController = require('./lib/controllers/SimpleDriveController'),
+    logger = require('../../lib/utils/Logger'),
+    SimpleDriveController = require('../../lib/controllers/SimpleDriveController'),
     Q = require('q'),
     fs = require('fs'),
     _ = require('lodash');
@@ -49,13 +49,13 @@ function readInstructionFile(filename) {
 
     rl.on('line', function (line, lineCount, byteCount) {
         logger.debug('line: %s', line);
-        let trimmedLine = line.trim();
+        let trimmedLine = line.toLowerCase().trim();
         if (!trimmedLine.startsWith('#') && trimmedLine.length > 0) {
             if (isValidCommand(trimmedLine)) {
                 logger.debug('Pushing valid command: ', trimmedLine);
                 commandList.push(trimmedLine);
             } else {
-                let errMsg = 'Invalid command at line ' + commandList.length + 1;
+                let errMsg = 'Invalid command at line ' + (commandList.length + 1);
                 logger.error(errMsg);
                 throw new Error(errMsg);
             }

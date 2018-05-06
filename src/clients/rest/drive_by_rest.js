@@ -8,17 +8,18 @@
 // > `node_modules` entirely from that location.
 // import {ApiAiClient} from "api-ai-javascript/ApiAiClient";
 
-var apiai = require('apiai');
-
-const express = require('express'),
+const apiai = require('apiai'),
+    express = require('express'),
     Q = require('q'),
     uuidV4 = require('uuid/v4'),
-    logger = require('./lib/utils/Logger'),
+    logger = require('../../lib/utils/Logger'),
     _ = require('lodash'),
-    ApiAiResponse = require('./lib/models/ApiAiResponse'),
-    apiAiclient = apiai('865899f8e52e468291cf96b7c9777c89'),
-    SimpleDriveController = require('./lib/controllers/SimpleDriveController'),
-    getConfig = require('./lib/services/ConfigService');
+    ApiAiResponse = require('../../lib/models/ApiAiResponse'),
+    SimpleDriveController = require('../../lib/controllers/SimpleDriveController'),
+    getConfig = require('../../lib/services/ConfigService');
+
+const config = getConfig();
+const apiAiclient = apiai(config.restServer.apiAiKey);
 
 const app = express(),
     COMMANDS = ['forward', 'backward', 'left', 'right'],
@@ -47,7 +48,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/drive/:command', function (req, res) {
-    var command = req.params.command;
+    let command = req.params.command;
     if (!isValidCommand(command)) {
         res.status(404).send();
     }
@@ -117,8 +118,6 @@ function sendCommandToSBrick(commandStr) {
     }
 }
 
-const config = getConfig();
-
 app.listen(config.port, function () {
-    logger.info(`Listening on port ${config.port}!`)
+    logger.info(`Listening on port ${config.restServer.port}!`)
 });

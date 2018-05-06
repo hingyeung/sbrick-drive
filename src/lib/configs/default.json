@@ -1,3 +1,6 @@
 {
-  "port": 3001
+  "restServer": {
+    "port": 3001,
+    "apiAiKey": "api.ai key"
+  }
 }

@@ -1,0 +1,5 @@
+# Sample instruction file
+forward
+right
+backward
+left

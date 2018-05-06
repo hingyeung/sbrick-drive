@@ -1,9 +1,23 @@
 'use strict';
 
+const fs = require('fs'),
+  path = require("path");
+
 function getConfig() {
-  const configForEnv = require(`../configs/${process.env.NODE_ENV}.json`);
   const defaultConfig = require('../configs/default.json');
-  return Object.assign({}, defaultConfig, configForEnv);
+  let mergedConfig = Object.assign({}, defaultConfig);
+
+  const envConfigFile = path.resolve(__dirname, `../configs/${process.env.NODE_ENV}.json`);
+  const localConfigFile = path.resolve(__dirname, '../configs/local.json');
+  if (fs.existsSync(envConfigFile)) {
+    mergedConfig = Object.assign({}, defaultConfig, require(envConfigFile));
+  }
+
+  if (fs.existsSync(localConfigFile)) {
+    mergedConfig = Object.assign({}, mergedConfig, require(localConfigFile));
+  }
+
+  return mergedConfig;
 }
 
 module.exports = getConfig;

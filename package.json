@@ -25,9 +25,9 @@
   "scripts": {
     "test": "npm run test-unit",
     "test-unit": "mocha -R spec **/*.spec.js",
-    "drive-by-keyboard": "NODE_ENV=development node src/drive_by_keyboard.js",
-    "drive-by-rest": "NODE_ENV=development node src/drive_by_rest.js",
-    "drive-by-script": "NODE_ENV=development node src/drive_by_script.js"
+    "drive-by-keyboard": "NODE_ENV=development node $NODE_DEBUG_OPTION src/clients/keyboard/drive_by_keyboard.js",
+    "drive-by-rest": "NODE_ENV=development node $NODE_DEBUG_OPTION src/clients/rest/drive_by_rest.js",
+    "drive-by-script": "NODE_ENV=development node $NODE_DEBUG_OPTION src/clients/script/drive_by_script.js src/clients/script/instructions.txt"
   },
   "author": "",
   "license": "ISC"
