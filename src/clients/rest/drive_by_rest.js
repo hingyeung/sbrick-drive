@@ -43,7 +43,7 @@ simpleDriveController.connect(function () {
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
   next();
 });
 
@@ -118,6 +118,6 @@ function sendCommandToSBrick(commandStr) {
     }
 }
 
-app.listen(config.port, function () {
+app.listen(config.restServer.port, function () {
     logger.info(`Listening on port ${config.restServer.port}!`)
 });
