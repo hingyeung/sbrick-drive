@@ -1,6 +1,6 @@
 {
   "name": "sbrick-drive",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This library provides an simple interface to interact with SBrick Bluetooth controller for Lego in NodeJS.",
   "main": "index.js",
   "dependencies": {
@@ -31,5 +31,7 @@
   },
   "author": "Samuel Li <samli@samuelli.net>",
   "license": "ISC",
-  "keywords": ["sbrick"]
+  "keywords": [
+    "sbrick"
+  ]
 }
