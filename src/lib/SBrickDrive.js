@@ -1,22 +1,22 @@
 'use strict';
 
-const SBCommand = require('../models/SBCommand'),
-	  logger = require('../utils/Logger'),
-	  SBEvent = require('../models/SBEvent'),
+const SBCommand = require('./models/SBCommand'),
+	  logger = require('./utils/Logger'),
+	  SBEvent = require('./models/SBEvent'),
 	  _ = require('lodash'),
-	  SBController = require('./SBrickController');
+	  SBController = require('./controllers/SBrickController');
 
 const DRIVE_DIRECTION = { STOP: 0, FORWARD: 1, BACKWARD: 2, LEFT: 3, CENTRE: 4, RIGHT: 5 };
 
-function SimpleDriveController(driveChannels, steeringChannels) {
+function SBrickDrive(driveChannels, steeringChannels) {
 	this.sbController = new SBController();
 	this.driveChannels = driveChannels;
 	this.steeringChannels = steeringChannels;
 }
 
-SimpleDriveController.DRIVE_DIRECTION = DRIVE_DIRECTION;
+SBrickDrive.DRIVE_DIRECTION = DRIVE_DIRECTION;
 
-SimpleDriveController.prototype.connect = function(onConnnectCallback) {
+SBrickDrive.prototype.connect = function(onConnnectCallback) {
 	this.sbController = new SBController();
 	this.sbController.init();
 	this.sbController.on(SBEvent.CONNECTED, function() {
@@ -24,7 +24,7 @@ SimpleDriveController.prototype.connect = function(onConnnectCallback) {
 	});
 };
 
-SimpleDriveController.prototype.driveFor = function(direction, duration) {
+SBrickDrive.prototype.driveFor = function(direction, duration) {
 	switch (direction) {
 		case DRIVE_DIRECTION.FORWARD:
 			this.forward();
@@ -48,15 +48,15 @@ SimpleDriveController.prototype.driveFor = function(direction, duration) {
 	this.maintainSpeedAndDirection(duration);
 };
 
-SimpleDriveController.prototype.left = function() {
+SBrickDrive.prototype.left = function() {
 	steering.call(this, DRIVE_DIRECTION.LEFT);
 };
 
-SimpleDriveController.prototype.right = function() {
+SBrickDrive.prototype.right = function() {
 	steering.call(this, DRIVE_DIRECTION.RIGHT);
 };
 
-SimpleDriveController.prototype.straight = function() {
+SBrickDrive.prototype.straight = function() {
 	steering.call(this, DRIVE_DIRECTION.CENTRE);
 };
 
@@ -94,15 +94,15 @@ function steering(direction) {
 	});
 }
 
-SimpleDriveController.prototype.forward = function() {
+SBrickDrive.prototype.forward = function() {
 	driveDirection.call(this, DRIVE_DIRECTION.FORWARD);
 };
 
-SimpleDriveController.prototype.backward = function() {
+SBrickDrive.prototype.backward = function() {
 	driveDirection.call(this, DRIVE_DIRECTION.BACKWARD);
 };
 
-SimpleDriveController.prototype.stop = function() {
+SBrickDrive.prototype.stop = function() {
 	driveDirection.call(this, DRIVE_DIRECTION.STOP);
 };
 
@@ -141,15 +141,15 @@ function driveDirection(driveDirection) {
 	});
 }
 
-SimpleDriveController.prototype.maintainSpeed = function(duration) {
+SBrickDrive.prototype.maintainSpeed = function(duration) {
 	maintainCurrentState.call(this, true, false, duration);
 };
 
-SimpleDriveController.prototype.maintainDirection = function(duration) {
+SBrickDrive.prototype.maintainDirection = function(duration) {
 	maintainCurrentState.call(this, false, true, duration);
 };
 
-SimpleDriveController.prototype.maintainSpeedAndDirection = function(duration) {
+SBrickDrive.prototype.maintainSpeedAndDirection = function(duration) {
 	maintainCurrentState.call(this, true, true, duration);
 };
 
@@ -175,26 +175,26 @@ function maintainCurrentState(speed, direction, duration) {
 	});
 }
 
-SimpleDriveController.prototype.simpleBackward = function() {
-	this.driveFor(SimpleDriveController.DRIVE_DIRECTION.BACKWARD, 2000);
+SBrickDrive.prototype.simpleBackward = function() {
+	this.driveFor(SBrickDrive.DRIVE_DIRECTION.BACKWARD, 2000);
 	this.stop();
 };
 
-SimpleDriveController.prototype.simpleLeft = function() {
-	this.driveFor(SimpleDriveController.DRIVE_DIRECTION.LEFT, 4000);
+SBrickDrive.prototype.simpleLeft = function() {
+	this.driveFor(SBrickDrive.DRIVE_DIRECTION.LEFT, 4000);
 	this.straight();
 	this.stop();
 };
 
-SimpleDriveController.prototype.simpleRight = function() {
-	this.driveFor(SimpleDriveController.DRIVE_DIRECTION.RIGHT, 4000);
+SBrickDrive.prototype.simpleRight = function() {
+	this.driveFor(SBrickDrive.DRIVE_DIRECTION.RIGHT, 4000);
 	this.straight();
 	this.stop();
 };
 
-SimpleDriveController.prototype.simpleForward = function() {
-	this.driveFor(SimpleDriveController.DRIVE_DIRECTION.FORWARD, 2000);
+SBrickDrive.prototype.simpleForward = function() {
+	this.driveFor(SBrickDrive.DRIVE_DIRECTION.FORWARD, 2000);
 	this.stop();
 };
 
-module.exports = SimpleDriveController;
+module.exports = SBrickDrive;

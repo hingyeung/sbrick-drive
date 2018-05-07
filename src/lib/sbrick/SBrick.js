@@ -3,8 +3,8 @@
 const noble = require('noble'),
 	Q = require('q'),
 	_ = require('lodash'),
-	SBCommand = require('./models/SBCommand'),
-	logger = require('./utils/Logger');
+	SBCommand = require('../models/SBCommand'),
+	logger = require('../utils/Logger');
 
 const REMOTE_CONTROL_SERVICE_UUID = '4dc591b0857c41deb5f115abda665b0c';
 const REMOTE_CONTROL_CHARACTERISTIC_UUID = '02b8cbcc0e254bda8790a15f53e6010f';

@@ -2,7 +2,7 @@
 
 const readline = require('linebyline'),
     logger = require('../../lib/utils/Logger'),
-    SimpleDriveController = require('../../lib/controllers/SimpleDriveController'),
+    SBrickDrive = require('../../lib/SBrickDrive'),
     Q = require('q'),
     fs = require('fs'),
     _ = require('lodash');
@@ -18,7 +18,7 @@ fs.watchFile(getInstructionFilename(), (curr, prev) => {
     executeStepsInFile();
 });
 
-let simpleDriveController = new SimpleDriveController(DRIVE_CHANNELS, STEERING_CHANNELS);
+let simpleDriveController = new SBrickDrive(DRIVE_CHANNELS, STEERING_CHANNELS);
 simpleDriveController.connect(executeStepsInFile);
 
 function getInstructionFilename() {

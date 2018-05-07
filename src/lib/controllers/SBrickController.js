@@ -1,6 +1,6 @@
 'use strict';
 
-const SBrick = require('../SBrick'),
+const SBrick = require('../sbrick/SBrick'),
 	Q = require('q'),
 	queue = require('async/queue'),
 	SBCommand = require('../models/SBCommand'),

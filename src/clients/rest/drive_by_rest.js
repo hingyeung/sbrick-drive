@@ -15,7 +15,7 @@ const apiai = require('apiai'),
     logger = require('../../lib/utils/Logger'),
     _ = require('lodash'),
     ApiAiResponse = require('../../lib/models/ApiAiResponse'),
-    SimpleDriveController = require('../../lib/controllers/SimpleDriveController'),
+    SBrickDrive = require('../../lib/SBrickDrive'),
     getConfig = require('../../lib/services/ConfigService');
 
 const config = getConfig();
@@ -34,7 +34,7 @@ const app = express(),
     STEERING_CHANNELS = [2];
 
 let isSBrickReady = false,
-    simpleDriveController = new SimpleDriveController(DRIVE_CHANNELS, STEERING_CHANNELS);
+    simpleDriveController = new SBrickDrive(DRIVE_CHANNELS, STEERING_CHANNELS);
 
 simpleDriveController.connect(function () {
     isSBrickReady = true;

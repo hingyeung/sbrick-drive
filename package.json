@@ -1,8 +1,8 @@
 {
   "name": "ble",
   "version": "1.0.0",
-  "description": "",
-  "main": "app2.js",
+  "description": "This library provides an simple interface to interact with SBrick Bluetooth controller for Lego in NodeJS.",
+  "main": "index.js",
   "dependencies": {
     "apiai": "^4.0.3",
     "async": "^2.4.0",
@@ -29,6 +29,7 @@
     "drive-by-rest": "NODE_ENV=development node $NODE_DEBUG_OPTION src/clients/rest/drive_by_rest.js",
     "drive-by-script": "NODE_ENV=development node $NODE_DEBUG_OPTION src/clients/script/drive_by_script.js src/clients/script/instructions.txt"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Samuel Li <samli@samuelli.net>",
+  "license": "ISC",
+  "keywords": ["sbrick"]
 }
