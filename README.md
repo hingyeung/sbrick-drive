@@ -45,7 +45,7 @@ provides the following RESTful API:
     * `GET /resolveActionFromText/:command` Use DialogFlow to convert free text/speech command into one of the 
     directional command for SBrick.
     
-    A simple web interface was created in `src/web/index.html`, which uses HTML5 speech recognition for the four 
+    A simple web interface was created in `src/clients/rest/web/index.html`, which uses HTML5 speech recognition for the four 
     directional commands (my daughter loved this too).
 
 ## License
