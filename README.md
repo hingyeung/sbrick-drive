@@ -1,8 +1,8 @@
 # SBrick Drive
 
 ## What is it?
-This project provides an abstract layer for SBrick Bluetooth controller for Lego in NodeJS. It focuses on controlling 
-vehicle that can move in four directions: forward, backward, left and right.
+This library provides a simple way to control [SBrick](https://www.sbrick.com) bluetooth controller for Lego in NodeJS. It focuses
+on controlling vehicle that can move in four directions: forward, backward, left and right.
 
 ## How to play?
 ##### Installation
@@ -14,17 +14,16 @@ the four control channels on a SBrick: 0, 1, 2 and 3. SBrickDrive needs to know 
 backward instruction (`DRIVE_CHANNELS`) and which channels are used for left and right steering (`STEERING_CHANNEL`). 
 E.g. My [4X4 Crawler](https://shop.lego.com/en-AU/4X4-Crawler-9398) uses channel 0 and 1 for driving forward and 
 backward, and channel 2 for steering.
-```js
+```javascript
 const DRIVE_CHANNELS = [0, 1],
   STEERING_CHANNELS = [2],
-  SBrickDrive = require('../../lib/SBrickDrive');
+  SBrickDrive = require('sbrick-drive');
 
 const sbDrive = new SBrickDrive(DRIVE_CHANNELS, STEERING_CHANNELS);
-
-sbDrive.simpleForward();
-sbDrive.simpleBackward();
-sbDrive.simpleLeft();
-sbDrive.simpleRight();
+const onConnected = function() {
+  sbDrive.simpleForward();
+};
+sbDrive.connect(onConnected);
 ```
 
 ### Clients
