@@ -1,5 +1,5 @@
 {
-  "name": "ble",
+  "name": "sbrick-drive",
   "version": "1.0.0",
   "description": "This library provides an simple interface to interact with SBrick Bluetooth controller for Lego in NodeJS.",
   "main": "index.js",
