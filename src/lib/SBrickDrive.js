@@ -181,13 +181,13 @@ SBrickDrive.prototype.simpleBackward = function() {
 };
 
 SBrickDrive.prototype.simpleLeft = function() {
-	this.driveFor(SBrickDrive.DRIVE_DIRECTION.LEFT, 4000);
+	this.driveFor(SBrickDrive.DRIVE_DIRECTION.LEFT, 3500);
 	this.straight();
 	this.stop();
 };
 
 SBrickDrive.prototype.simpleRight = function() {
-	this.driveFor(SBrickDrive.DRIVE_DIRECTION.RIGHT, 4000);
+	this.driveFor(SBrickDrive.DRIVE_DIRECTION.RIGHT, 3500);
 	this.straight();
 	this.stop();
 };

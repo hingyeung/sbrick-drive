@@ -1,6 +1,6 @@
 'use strict';
 
-const noble = require('noble'),
+const noble = require('noble-mac'),
 	Q = require('q'),
 	_ = require('lodash'),
 	SBCommand = require('../models/SBCommand'),
@@ -52,7 +52,7 @@ let SBrick = function() {
 			commandForThisChannel = [
 				channel, direction, power
 			];
-			
+
 		command = _.concat(command, commandForThisChannel);
 		logger.debug('command', command);
 		writeWithoutResponse(Buffer.from(command));
@@ -193,6 +193,7 @@ let SBrick = function() {
 };
 
 function isSBrick(peripheral) {
+	logger.debug(`checking peripheral name [${peripheral}]`);
 	return peripheral.advertisement.localName &&
 			peripheral.advertisement.localName.startsWith('SBrick ')
 }
